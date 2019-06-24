@@ -1,0 +1,21 @@
+- name: Download Kafka
+  get_url:
+    url: http://mirror.downloadvn.com/apache/kafka/2.2.0/kafka_2.12-2.2.0.tgz 
+    dest: /root/kafka.tar
+    mode: '0440'
+- name: Extract kafka.tgz into /root/kafka
+  unarchive:
+    src: /root/kafka.tar
+    dest: /root
+    remote_src: yes
+- name: rename 
+  shell: mv /root/kafka_2.12-2.2.0 /root/kafka
+- name : enable JMX in config 
+  lineinfile:
+    path: /root/kafka/bin/kafka-run-class.sh
+    regexp: 'KAFKA_JMX_OPTS="\$KAFKA_JMX_OPTS -Dcom.sun.management.jmxremote.port=\$JMX_PORT "'
+    line: AFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Dcom.sun.management.jmxremote.port=$JMX_PORT -Djava.rmi.server.hostname="{{ inventory_hostname }}"" -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "
+- name: Config server
+  lineinfile:
+    path: /root/kafka/config/server.properties
+    
